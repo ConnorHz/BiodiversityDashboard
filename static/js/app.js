@@ -53,13 +53,13 @@ function updateBar(data) {
         orientation: 'h'
     }];
   
-    Plotly.newPlot('bar', data);
+    Plotly.newPlot('bar', data, {}, {responsive: true});
 }
 
 
 function updateBubble(data) {
 
-    var trace1 = {
+    var data = [{
         x: data.otu_ids.map(i => `${i}`),
         y: data.sample_values,
         text: data.otu_labels,
@@ -68,12 +68,36 @@ function updateBubble(data) {
           size: data.sample_values,
           color: data.otu_ids
         }
-      };
-      
-      var data = [trace1];
-      
-      
-      Plotly.newPlot('bubble', data, {}, {scrollZoom: true});
+    }];
+        
+    Plotly.newPlot('bubble', data, {}, {scrollZoom: true, responsive: true});
+}
+
+function updateGauge(washes) {
+    
+    var data = [
+    {
+        domain: { x: [0, 1], y: [0, 1] },
+        value: washes,
+        title: { text: "Navel Wash Frequency<br><span style='font-size:0.8em;color:gray'>Scrubs per Week</span>"},
+        type: "indicator",
+        mode: "gauge+number",
+        gauge: {
+        axis: { range: [null, 10]},
+        bar: { color: "#768976" },
+        steps: [
+            { range: [0, 2], color: "#002700" },
+            { range: [2, 4], color: "#003b00" },
+            { range: [4, 6], color: "#004e00" },
+            { range: [6, 8], color: "#006200" },
+            { range: [8, 10], color: "#007600" },
+        ],
+        }
+    }
+    ];
+
+    Plotly.newPlot('gauge', data, {}, {responsive: true});
+
 }
 
 function optionChanged(subjectId) {
@@ -83,6 +107,7 @@ function optionChanged(subjectId) {
         // get metadata for selected test subject
         var metadata = data.metadata.find(({id}) => id === parseInt(subjectId));
 
+        // get microbe sample for selected test subject
         var sample = data.samples.find(({id}) => id === subjectId);
 
         console.log(metadata);
@@ -91,6 +116,7 @@ function optionChanged(subjectId) {
         updateMetadataPanel(metadata);
         updateBar(sample);
         updateBubble(sample);
+        updateGauge(metadata.wfreq);
     });
 }
 
