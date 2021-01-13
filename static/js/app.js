@@ -2,7 +2,8 @@ var dataPath = "./data/samples.json";
 
 // retrieve data
 d3.json(dataPath).then(function(data) {   
-        // fill dropdown
+    
+    // fill dropdown
     d3.select("#selDataset").selectAll("option").data(data.names)
         .enter()
         .append("option")
@@ -55,8 +56,24 @@ function updateBar(data) {
     Plotly.newPlot('bar', data);
 }
 
+
 function updateBubble(data) {
-    
+
+    var trace1 = {
+        x: data.otu_ids.map(i => `${i}`),
+        y: data.sample_values,
+        text: data.otu_labels,
+        mode: 'markers',
+        marker: {
+          size: data.sample_values,
+          color: data.otu_ids
+        }
+      };
+      
+      var data = [trace1];
+      
+      
+      Plotly.newPlot('bubble', data, {}, {scrollZoom: true});
 }
 
 function optionChanged(subjectId) {
@@ -73,6 +90,7 @@ function optionChanged(subjectId) {
 
         updateMetadataPanel(metadata);
         updateBar(sample);
+        updateBubble(sample);
     });
 }
 
