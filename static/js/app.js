@@ -30,18 +30,49 @@ function updateMetadataPanel(data) {
 }
 
 function updateBar(data) {  
- 
+    var samples = []
+
+    data.otu_ids.forEach((value, index) => {
+        samples.push({
+            "id": value,
+            "value": data.sample_values[index]
+        })
+    });
+
+    var sortedData = samples.sort((a, b) => b.value - a.value);
+
+    var slicedData = sortedData.slice(0, 10).reverse();
+
+    console.log(slicedData);
+
+    var data = [{
+        type: 'bar',
+        x: slicedData.map(x => x.value),
+        y: slicedData.map(x => `OTU ${x.id}`),
+        orientation: 'h'
+    }];
+  
+    Plotly.newPlot('bar', data);
+}
+
+function updateBubble(data) {
+    
 }
 
 function optionChanged(subjectId) {
     d3.json(dataPath).then(function(data) {
-
-        // get metadata for selected test subject
-        metadata = data.metadata.find(({id}) => id === parseInt(subjectId));
+        console.log(data);
         
+        // get metadata for selected test subject
+        var metadata = data.metadata.find(({id}) => id === parseInt(subjectId));
+
+        var sample = data.samples.find(({id}) => id === subjectId);
+
         console.log(metadata);
+        console.log(sample);
 
         updateMetadataPanel(metadata);
+        updateBar(sample);
     });
 }
 
